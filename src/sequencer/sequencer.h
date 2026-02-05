@@ -131,6 +131,9 @@ private:
 
     State _state = State::Wander;
     State _previous = _state;
+
+    // core subdivision logic, called once per subdivision
+    Bar _click();
 };
 
 } // midier

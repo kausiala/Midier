@@ -32,5 +32,25 @@ void off(Number number);
 void play(Note note,                unsigned duration = 200);
 void play(Note note, Octave octave, unsigned duration = 200);
 
+// ---------------------------------------------------------------------------
+// MIDI Input (optional, guarded by settings::MidiInputEnabled)
+// ---------------------------------------------------------------------------
+
+// MIDI real-time events relevant to clock synchronisation
+enum class Event : char
+{
+    None,   // no relevant message received
+    Clock,  // 0xF8 — timing clock tick (24 PPQN)
+    Start,  // 0xFA — start transport
+    Stop,   // 0xFC — stop transport
+};
+
+// Non-blocking read from the MIDI input serial port.
+// Returns the most recent real-time event found in the buffer,
+// or Event::None if nothing relevant was available.
+// Only functional when settings::MidiInputEnabled is true;
+// otherwise always returns Event::None.
+Event poll();
+
 } // midi
 } // midier

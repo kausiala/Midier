@@ -1,5 +1,6 @@
 #include "layer.h"
 
+#include "../settings.h"
 #include "../scale/scale.h"
 #include "../style/style.h"
 #include "../triad/triad.h"
@@ -105,7 +106,7 @@ void Layer::click()
         const auto count = (unsigned)rate;
 
         // how many subdivisions exist between every two units?
-        const auto subdivisions = (unsigned)(Time::Subdivisions / count);
+        const auto subdivisions = (unsigned)(Time::Subdivisions / count) * settings::GateDutyCycle;
 
         if (++_played.subdivisions >= subdivisions)
         {

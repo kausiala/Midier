@@ -1,5 +1,6 @@
 #include "midi.h"
 
+#include "../settings.h"
 #include "../debug/debug.h"
 
 #include <Arduino.h>
@@ -14,7 +15,7 @@ namespace
 
 void send(byte command, byte data1, byte data2)
 {
-    constexpr auto channel = 0;
+    constexpr auto channel = settings::MidiChannel;
 
 #ifndef DEBUG
     Serial.write((command & 0xF0) | (channel & 0x0F));

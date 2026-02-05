@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../settings.h"
+
 namespace midier
 {
 
@@ -16,7 +18,7 @@ struct Time
 
     // the # of bars in the logical loop
     // this should be a large number to make it seem continous and infinite
-    constexpr static auto Bars = 48;
+    constexpr static auto Bars = settings::MaxBars;
 
     // bars are in 1/4 time signature
     // we support the following note values:

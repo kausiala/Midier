@@ -74,7 +74,7 @@ Event poll()
     // Keep only the last real-time message found in this pass.
     while (Serial1.available() > 0)
     {
-        const auto byte = Serial.read();
+        const auto byte = Serial1.read();
 
         switch (byte)
         {

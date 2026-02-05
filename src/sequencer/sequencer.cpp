@@ -177,9 +177,10 @@ void Sequencer::wander()
 
 Sequencer::Bar Sequencer::click(Run run)
 {
-    // handle internal clock
     if (clock == Clock::Internal)
     {
+        // --- internal clock: gate on millis() as before ---
+
         const auto bps = (float)bpm / 60.f; // beats per second
         const auto mspb = 1000.f / bps; // ms per beat
         const auto mspc = mspb / (float)midier::Time::Subdivisions; // ms per click
@@ -202,13 +203,43 @@ Sequencer::Bar Sequencer::click(Run run)
                 }
             }
         }
+
+        _clicked = millis();
+        return _click();
     }
-    _clicked = millis(); // reset the time of the last click to now
 
-    // -- from here on the logic is identical for both clock modes --
+    // --- external clock: driven by incoming MIDI clock ticks ---
 
-    // handle the actual click and state changes
+    const auto event = midi::poll();
 
+    if (event == midi::Event::Stop || event == midi::Event::Start)
+    {
+        // both Stop and Start silence everything and reset to wander;
+        // the user can start new layers after a Start event
+        wander();
+        return Bar::None;
+    }
+
+    if (event != midi::Event::Clock)
+    {
+        return Bar::Same; // nothing to do
+    }
+
+    // one MIDI clock tick = SubdivisionsPerMidiClock subdivision clicks
+    Bar bar = Bar::Same;
+    for (char i = 0; i < Time::SubdivisionsPerMidiClock; ++i)
+    {
+        const auto b = _click();
+        if (b != Bar::Same)
+        {
+            bar = b;
+        }
+    }
+    return bar;
+}
+
+Sequencer::Bar Sequencer::_click()
+{
     Bar bar = Bar::Same;
 
     if (_started != -1) // check if we should reset `_started`

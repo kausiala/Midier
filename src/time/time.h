@@ -31,6 +31,10 @@ struct Time
     //
     constexpr static auto Subdivisions = 96;
 
+    // MIDI clock runs at 24 PPQN; this is how many Midier subdivisions
+    // correspond to a single MIDI clock tick
+    constexpr static auto SubdivisionsPerMidiClock = Subdivisions / 24;
+
     struct Difference
     {
         char bars;

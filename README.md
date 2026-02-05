@@ -16,6 +16,7 @@ Midier is a library written in C++ to play, record, loop and program MIDI notes,
     * [Recording and Looping](#recording-and-looping)
     * [Asynchronous Interface](#asynchronous-interface)
     * [Assistance](#assistance)
+    * [MIDI Clock Sync](#midi-clock-sync)
 * [Setup](#setup)
 * [Debugging](#debugging)
 * [Classes](#classes)
@@ -347,6 +348,51 @@ For example, if the current rhythm is in rate of eighth notes, then new layers w
 For example, if the current rhythm is in rate of eighth notes, then new layers will start on exact eighth notes, or on exact sixteenth notes.
 
 > Check out the [Assist](examples/Sequencer/Advanced/Assist/Assist.ino) example that demonstrates the different assistance modes
+
+### MIDI Clock Sync
+
+*Midier* supports synchronising its sequencer to an external MIDI clock signal.
+
+By default, `Sequencer` runs on its own internal clock, deriving timing from the `bpm` member and `millis()`. When external MIDI clock sync is enabled, the sequencer instead advances one subdivision for every incoming MIDI clock tick, locking it to whatever master device (DAW, drum machine, another sequencer, etc.) is sending the clock.
+
+The MIDI standard defines a clock signal of **24 pulses per quarter note (PPQN)**. Midier internally uses **96 subdivisions per quarter-note bar**, which is exactly 4x the MIDI clock rate. This means each incoming `0xF8` clock byte maps cleanly to 4 Midier subdivisions — no fractional math or interpolation is needed.
+
+The MIDI input stage is built into the `midi` module (declared in [midi.h](src/midi/midi.h)). It recognises three MIDI real-time messages:
+
+| Byte   | Event   | Meaning                       |
+|--------|---------|-------------------------------|
+| `0xF8` | Clock   | Timing tick (24 PPQN)         |
+| `0xFA` | Start   | Start transport from the top  |
+| `0xFC` | Stop    | Stop transport                |
+
+To enable MIDI input, set `MidiInputEnabled` to `true` in [settings.h](src/settings.h). When disabled (the default), the input code is compiled out and has zero overhead.
+
+#### Clock Mode Configuration
+
+The `Sequencer` has a `clock` member that selects the timing source:
+
+- `Clock::Internal` (default) — timing is derived from the `bpm` member and `millis()`, exactly as before. The `Run::Sync` / `Run::Async` parameter to `click()` controls blocking behaviour.
+- `Clock::External` — on each call to `click()`, the sequencer polls for incoming MIDI clock events via `midi::poll()`. When a clock tick (`0xF8`) arrives, it internally fires `Time::SubdivisionsPerMidiClock` (= 4) subdivision clicks. When no event is pending, `click()` returns immediately. Start and Stop transport events are also handled automatically.
+
+The sequencer API is unchanged — your main loop still just calls `click()`:
+
+```cpp
+sequencer.clock = midier::Sequencer::Clock::External;
+
+while (true)
+{
+    sequencer.click(midier::Sequencer::Run::Async);
+    // ... handle buttons, etc.
+}
+```
+
+> **Note:** The *assistance* feature (`Assist::Half` / `Assist::Full`) relies on knowing the BPM to calculate note-start delays. In external clock mode the BPM is unknown, so assistance is effectively unsupported. Set `sequencer.assist = Assist::No` when using external clock.
+
+#### Serial Port Configuration
+
+MIDI input and output both use the hardware `Serial` port. On boards with **only one UART** (e.g. Arduino Uno), this means MIDI input and output **cannot operate simultaneously**; the single serial port can only be wired to one direction at a time.
+
+To use MIDI clock sync you will need a board with **multiple hardware serial ports** (e.g. Arduino Mega, Due, Teensy, ESP32), so you can dedicate one port to MIDI output and another to MIDI input. The library hard-codes `Serial` for output and `Serial1` for input in [midi.cpp](src/midi/midi.cpp).
 
 ## Setup
 

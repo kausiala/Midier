@@ -12,7 +12,7 @@ constexpr uint8_t MidiChannel = 0;
 constexpr char MaxBars = 48;
 
 // Set to true to enable MIDI input (clock sync, transport).
-// Requires a dedicated Serial port for MIDI input on boards with
+// Requires a dedicated Serial1 port for MIDI input on boards with
 // only one UART, since MIDI output already uses Serial.
 constexpr bool MidiInputEnabled = false;
 

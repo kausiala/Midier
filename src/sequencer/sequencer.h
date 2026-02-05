@@ -29,6 +29,12 @@ struct Sequencer
         Async,
     };
 
+    enum class Clock : char
+    {
+        Internal, // timing derived from `bpm` and millis()  (default)
+        External, // timing driven by the caller (e.g. MIDI clock)
+    };
+
     // this class is made to hide the underlying `Layer` from the client
     // so he or she will not call `Layer` methods directly but will call
     // `Sequencer` methods only
@@ -93,6 +99,7 @@ struct Sequencer
 
     // exposed members
     Assist assist = Assist::No;
+    Clock clock = Clock::Internal;
     ILayers layers;
     unsigned char bpm;
     Config config; // common layer configuration

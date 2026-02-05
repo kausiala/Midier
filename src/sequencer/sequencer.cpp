@@ -177,32 +177,37 @@ void Sequencer::wander()
 
 Sequencer::Bar Sequencer::click(Run run)
 {
-    const auto bps = (float)bpm / 60.f; // beats per second
-    const auto mspb = 1000.f / bps; // ms per beat
-    const auto mspc = mspb / (float)midier::Time::Subdivisions; // ms per click
+    // handle internal clock
+    if (clock == Clock::Internal)
+    {
+        const auto bps = (float)bpm / 60.f; // beats per second
+        const auto mspb = 1000.f / bps; // ms per beat
+        const auto mspc = mspb / (float)midier::Time::Subdivisions; // ms per click
 
-    if (_clicked == -1)
-    {
-        // this is the very first click so no need to wait
-    }
-    else
-    {
-        if (run == Run::Sync)
+        if (_clicked == -1)
         {
-            while (millis() - _clicked < mspc); // wait until enough time has passed
+            // this is the very first click so no need to wait
         }
-        else if (run == Run::Async)
+        else
         {
-            if (millis() - _clicked < mspc)
+            if (run == Run::Sync)
             {
-                return Bar::Same; // we don't actually click yet
+                while (millis() - _clicked < mspc); // wait until enough time has passed
+            }
+            else if (run == Run::Async)
+            {
+                if (millis() - _clicked < mspc)
+                {
+                    return Bar::Same; // we don't actually click yet
+                }
             }
         }
     }
-
     _clicked = millis(); // reset the time of the last click to now
 
-    // only now we are actually starting to click
+    // -- from here on the logic is identical for both clock modes --
+
+    // handle the actual click and state changes
 
     Bar bar = Bar::Same;
 

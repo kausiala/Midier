@@ -30,6 +30,7 @@ struct Layer
     bool waiting() const;
     bool wandering() const;
     bool looping() const;
+    bool sounding() const;
 
     // actions
     void stop();

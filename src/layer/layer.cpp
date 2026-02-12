@@ -51,6 +51,11 @@ bool Layer::looping() const
     return _state == State::Record || _state == State::Playback;
 }
 
+bool Layer::sounding() const
+{
+    return _played.subdivisions != -1;
+}
+
 void Layer::stop()
 {
     if (_state == Layer::State::Wait || _state == Layer::State::Wander)

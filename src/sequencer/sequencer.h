@@ -88,6 +88,12 @@ struct Sequencer
     //
     Bar click(Run run);
 
+    // advance the sequencer by a number of subdivisions immediately,
+    // regardless of the clock source configured in `clock`.
+    // this is used by clients that implement their own timing,
+    // e.g. driving subdivisions from incoming MIDI clock ticks.
+    Bar tick(char subdivisions = 1);
+
     // run synchronously for a certain time duration
     // these methods are blocking and return after the time duration has fully passed
     void run(const Time::Duration & duration);

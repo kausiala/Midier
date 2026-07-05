@@ -33,9 +33,16 @@ Number number(Note note, Octave octave)
     return 24 + (12 * (octave - 1)) + (char)note;
 }
 
+void (*on_note_on)(Number) = nullptr;
+
 void on(Number number, Velocity velocity)
 {
     send(0x90, number, (char)velocity);
+
+    if (on_note_on != nullptr)
+    {
+        on_note_on(number);
+    }
 }
 
 void off(Number number)

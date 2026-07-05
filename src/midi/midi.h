@@ -25,6 +25,9 @@ Number number(Note note, Octave octave);
 // send a 'NOTE_ON' MIDI command
 void on(Number number, Velocity velocity = Velocity::High); // by default max velocity
 
+// optional application hook: called after every NOTE_ON is sent
+extern void (*on_note_on)(Number number);
+
 // send a 'NOTE_OFF' MIDI command
 void off(Number number);
 

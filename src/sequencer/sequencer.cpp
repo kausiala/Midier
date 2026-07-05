@@ -238,6 +238,23 @@ Sequencer::Bar Sequencer::click(Run run)
     return bar;
 }
 
+Sequencer::Bar Sequencer::tick(char subdivisions)
+{
+    Bar bar = Bar::Same;
+
+    while (subdivisions-- > 0)
+    {
+        const auto b = _click();
+
+        if (b != Bar::Same)
+        {
+            bar = b;
+        }
+    }
+
+    return bar;
+}
+
 Sequencer::Bar Sequencer::_click()
 {
     Bar bar = Bar::Same;

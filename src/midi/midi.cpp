@@ -18,9 +18,14 @@ void send(byte command, byte data1, byte data2)
     constexpr auto channel = settings::MidiChannel;
 
 #ifndef DEBUG
-    Serial.write((command & 0xF0) | (channel & 0x0F));
-    Serial.write(data1 & 0x7F);
-    Serial.write(data2 & 0x7F);
+    // single atomic write: some USB-MIDI bridges mis-packetize
+    // messages whose bytes arrive with gaps in between
+    const byte message[3] = {
+        (byte)((command & 0xF0) | (channel & 0x0F)),
+        (byte)(data1 & 0x7F),
+        (byte)(data2 & 0x7F),
+    };
+    Serial.write(message, sizeof(message));
 #else
     // TRACE_4(F("Sending MIDI command NOTE-"), command == 0x90 ? F("ON") : F("OFF"), " #", (int)data1);
 #endif

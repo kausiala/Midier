@@ -1,6 +1,5 @@
 #include "layer.h"
 
-#include "../settings.h"
 #include "../scale/scale.h"
 #include "../style/style.h"
 #include "../triad/triad.h"
@@ -100,7 +99,7 @@ void Layer::revoke()
     _state = State::Idle; // will affect immediately
 }
 
-void Layer::click()
+void Layer::click(unsigned char gate)
 {
     if (_played.subdivisions != -1) // check if a note is being played and should stop
     {
@@ -111,9 +110,20 @@ void Layer::click()
         const auto count = (unsigned)rate;
 
         // how many subdivisions exist between every two units?
-        const auto subdivisions = (unsigned)(Time::Subdivisions / count) * settings::GateDutyCycle;
+        const auto unit = (unsigned)(Time::Subdivisions / count);
 
-        if (++_played.subdivisions >= subdivisions)
+        // the note lasts `gate` percent of the unit: a shorter gate leaves
+        // room for the sound to decay before the next note
+        // (a layer plays one note at a time, so the gate can't exceed 100%)
+        const auto clamped = gate > 100 ? 100 : gate;
+        auto length = unit * clamped / 100;
+
+        if (length == 0)
+        {
+            length = 1; // at least one subdivision
+        }
+
+        if ((unsigned)++_played.subdivisions >= length)
         {
             midi::off(_played.number);
             _played.subdivisions = -1;

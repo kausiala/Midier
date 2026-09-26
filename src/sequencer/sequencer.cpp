@@ -332,7 +332,7 @@ Sequencer::Bar Sequencer::_click()
     }
 
     // let all layers click
-    layers.click();
+    layers.click(gate);
 
     // after playing all the layers, we advance the global time
     ++Time::now;

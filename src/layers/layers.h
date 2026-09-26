@@ -44,7 +44,7 @@ struct ILayers
     // aggregated `Layer` methods
     // they are evaluated on all running layers
     void record();
-    void click();
+    void click(unsigned char gate = 100);
     void revoke();
 
 private:

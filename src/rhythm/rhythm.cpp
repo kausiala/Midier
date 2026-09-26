@@ -127,6 +127,16 @@ void description(Rhythm rhythm, /* out */ Description & desc)
     __rhythmers[(unsigned)rhythm].description(/* out */ desc);
 }
 
+unsigned count(Rhythm rhythm)
+{
+    return __rhythmers[(unsigned)rhythm].count();
+}
+
+float portion(Rhythm rhythm, unsigned index)
+{
+    return __rhythmers[(unsigned)rhythm].portion(index);
+}
+
 bool played(Rhythm rhythm, const Layer & layer, /* out */ unsigned & index)
 {
     const Rhythmer & rhythmer = __rhythmers[(unsigned)rhythm];

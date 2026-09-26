@@ -29,12 +29,6 @@ struct Sequencer
         Async,
     };
 
-    enum class Clock : char
-    {
-        Internal, // timing derived from `bpm` and millis()  (default)
-        External, // timing driven by the caller (e.g. MIDI clock)
-    };
-
     // this class is made to hide the underlying `Layer` from the client
     // so he or she will not call `Layer` methods directly but will call
     // `Sequencer` methods only
@@ -89,9 +83,10 @@ struct Sequencer
     Bar click(Run run);
 
     // advance the sequencer by a number of subdivisions immediately,
-    // regardless of the clock source configured in `clock`.
-    // this is used by clients that implement their own timing,
-    // e.g. driving subdivisions from incoming MIDI clock ticks.
+    // regardless of `bpm` and of the time passed since the previous click.
+    // this is for clients that keep their own time, e.g. ones that follow an
+    // external MIDI clock: call `tick(Time::SubdivisionsPerMidiClock)` for
+    // every incoming clock tick, and don't call `click()` at all.
     Bar tick(char subdivisions = 1);
 
     // run synchronously for a certain time duration
@@ -105,7 +100,6 @@ struct Sequencer
 
     // exposed members
     Assist assist = Assist::No;
-    Clock clock = Clock::Internal;
     ILayers layers;
     unsigned char bpm;
     Config config; // common layer configuration

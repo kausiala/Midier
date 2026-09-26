@@ -51,6 +51,12 @@ void description(Rhythm rhythm, /* out */ Description & desc);
 bool played(Rhythm rhythm, const Layer & layer, /* out */ unsigned & index);
 Rate rate(Rhythm rhythm);
 
+// onset introspection: the number of onsets in the rhythm's cycle and
+// their positions in bars (may exceed 1 for multi-bar rhythms).
+// this lets clients that implement their own note timing follow a rhythm.
+unsigned count(Rhythm rhythm);
+float portion(Rhythm rhythm, unsigned index);
+
 } // rhythm
 
 } // midier

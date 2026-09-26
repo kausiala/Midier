@@ -100,6 +100,7 @@ struct Sequencer
 
     // exposed members
     Assist assist = Assist::No;
+    unsigned char gate = 100; // note length, in % of the rhythm unit (1-100)
     ILayers layers;
     unsigned char bpm;
     Config config; // common layer configuration

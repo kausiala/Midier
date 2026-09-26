@@ -127,9 +127,16 @@ void ILayers::record()
     eval([](Layer & layer) { layer.record(); });
 }
 
-void ILayers::click()
+void ILayers::click(unsigned char gate)
 {
-    eval([](Layer & layer) { layer.click(); });
+    // not through eval(): its callbacks can't carry the gate
+    for (auto & layer : *this)
+    {
+        if (!layer.idle())
+        {
+            layer.click(gate);
+        }
+    }
 }
 
 void ILayers::revoke()

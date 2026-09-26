@@ -16,6 +16,7 @@ Midier is a library written in C++ to play, record, loop and program MIDI notes,
     * [Recording and Looping](#recording-and-looping)
     * [Asynchronous Interface](#asynchronous-interface)
     * [Assistance](#assistance)
+    * [Gate](#gate)
     * [External Clock](#external-clock)
 * [Setup](#setup)
 * [Debugging](#debugging)
@@ -349,6 +350,21 @@ For example, if the current rhythm is in rate of eighth notes, then new layers w
 For example, if the current rhythm is in rate of eighth notes, then new layers will start on exact eighth notes, or on exact sixteenth notes.
 
 > Check out the [Assist](examples/Sequencer/Advanced/Assist/Assist.ino) example that demonstrates the different assistance modes
+
+### Gate
+
+The gate is how long every note of a layer lasts, as a percentage of the rhythm unit.
+
+By default, `Sequencer::gate` is 100, and a note lasts until the next one starts (legato).
+A shorter gate leaves room for the sound to decay between notes, which suits synthesizers with a noticeable release.
+For example, a gate of 50 plays eighth notes of a sixteenth each:
+
+```c++
+sequencer.gate = 50; // notes last half of the rhythm unit
+```
+
+The gate can be changed at any time, and applies to all layers from the next subdivision on.
+Values from 1 to 100 are supported: a layer plays one note at a time, so notes can't overlap.
 
 ### External Clock
 

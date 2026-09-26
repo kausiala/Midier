@@ -38,7 +38,8 @@ struct Layer
     void revoke();
 
     // runs all the logic of this layer once
-    void click();
+    // a played note lasts `gate` percent (1-100) of the rhythm unit
+    void click(unsigned char gate = 100);
 
 #ifdef DEBUG
     unsigned char id;

@@ -18,6 +18,8 @@ Midier is a library written in C++ to play, record, loop and program MIDI notes,
     * [Assistance](#assistance)
     * [Gate](#gate)
     * [External Clock](#external-clock)
+    * [Application Hooks](#application-hooks)
+    * [Settings](#settings)
 * [Setup](#setup)
 * [Debugging](#debugging)
 * [Classes](#classes)
@@ -389,6 +391,29 @@ Handling the transport messages is up to the sketch: on Start (`0xFA`) reset `Ti
 MIDI input needs a serial port of its own, as *Midier* sends MIDI out on `Serial`: use a board with a second hardware UART (e.g. Arduino Mega, Leonardo, Due, Teensy).
 
 > Check out the [External Clock](examples/Sequencer/Advanced/ExternalClock/ExternalClock.ino) example that follows an external MIDI clock and its transport messages
+
+### Application Hooks
+
+A few more interfaces help applications that build on top of *Midier*:
+
+- `midi::on_note_on` is an optional function called after every NOTE_ON that *Midier* sends, with the note's MIDI number.
+  It's useful for feedback such as blinking an LED on every note:
+
+  ```c++
+  midier::midi::on_note_on = [](midier::midi::Number) { digitalWrite(LED_BUILTIN, HIGH); };
+  ```
+
+- `Layer::sounding()` tells whether a layer is currently holding a note.
+
+- `rhythm::count()` and `rhythm::portion()` describe a rhythm's onsets: how many notes it plays in a cycle, and where each one falls, in bars (beyond 1 for rhythms longer than a bar).
+  They let an application that times its own notes follow the same rhythms.
+
+### Settings
+
+A few compile-time settings are in [settings.h](src/settings.h):
+
+- `MidiChannel` - the MIDI channel notes are sent on (0-15 for channels 1-16)
+- `MaxBars` - the number of bars in the logical loop (`Time::Bars`)
 
 ## Setup
 

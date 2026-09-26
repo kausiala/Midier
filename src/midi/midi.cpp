@@ -69,36 +69,5 @@ void play(Note note, Octave octave, unsigned duration)
     off(no);
 }
 
-// ---------------------------------------------------------------------------
-// MIDI Input
-// ---------------------------------------------------------------------------
-
-Event poll()
-{
-    if (!settings::MidiInputEnabled)
-    {
-        return Event::None;
-    }
-
-    Event event = Event::None;
-
-    // Drain the receive buffer so we don't fall behind.
-    // Keep only the last real-time message found in this pass.
-    while (Serial1.available() > 0)
-    {
-        const auto byte = Serial1.read();
-
-        switch (byte)
-        {
-            case 0xF8: event = Event::Clock; break;
-            case 0xFA: event = Event::Start; break;
-            case 0xFC: event = Event::Stop;  break;
-            default: break; // ignore everything else
-        }
-    }
-
-    return event;
-}
-
 } // midi
 } // midier

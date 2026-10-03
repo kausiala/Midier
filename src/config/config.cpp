@@ -20,7 +20,7 @@ inline long __get(long data, unsigned offset, long mask)
 
 } //
 
-Packed::Packed()
+Packed::Packed() : _data(0) // the setters below only touch their own bits
 {
     note        (Note::C);
     accidental  (Accidental::Natural);

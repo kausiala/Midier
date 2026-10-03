@@ -59,7 +59,7 @@ Sequencer::Handle Sequencer::start(Degree degree)
             const auto jumps = Time::Subdivisions / units;
 
             // how many subdivisions passed since the last jump
-            const auto passed = (Time::now - Time { .bars = 0, .subdivisions = _started }).subdivisions % jumps;
+            const auto passed = (Time::now - Time(0, _started)).subdivisions % jumps;
 
             // how many subdivisions are left until the next jump
             delay = (jumps - passed) % jumps;
